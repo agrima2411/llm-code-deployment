@@ -7,12 +7,11 @@ app = FastAPI()
 def root():
     return {"message": "LLM Code Deployment API is running 🚀"}
 
-@app.post("/api-endpoint")
+@app.post("/")  # <-- change this from "/api-endpoint" to "/"
 async def api_endpoint(request: Request):
     data = await request.json()
     parsed = parse_request(data)
 
-    # Check secret
     if not verify_secret(parsed.get("secret", "")):
         return {"status": "error", "message": "Invalid secret"}
 
