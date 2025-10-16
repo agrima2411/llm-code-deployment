@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request
+from mangum import Mangum
+from app.main import verify_secret, parse_request, build_evaluation_payload
 
 app = FastAPI()
 
@@ -9,10 +11,21 @@ def root():
 @app.post("/api-endpoint")
 async def api_endpoint(request: Request):
     data = await request.json()
-    return {"status": "ok", "received": data}
+    parsed = parse_request(data)
 
-# Vercel Lambda handler
-def handler(event, context):
-    from mangum import Mangum
-    asgi_handler = Mangum(app)
-    return asgi_handler(event, context)
+    # Check secret
+    if not verify_secret(parsed.get("secret", "")):
+        return {"status": "error", "message": "Invalid secret"}
+
+    # Example: prepare payload (replace with GitHub repo logic later)
+    payload = build_evaluation_payload(
+        parsed,
+        repo_url="https://github.com/your-username/repo",
+        commit_sha="abc123",
+        pages_url="https://your-username.github.io/repo"
+    )
+
+    return {"status": "ok", "payload": payload}
+
+# Vercel serverless handler
+handler = Mangum(app)
