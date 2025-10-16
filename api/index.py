@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request
-from mangum import Mangum
 from app.main import verify_secret, parse_request, build_evaluation_payload
 
 app = FastAPI()
@@ -17,7 +16,6 @@ async def api_endpoint(request: Request):
     if not verify_secret(parsed.get("secret", "")):
         return {"status": "error", "message": "Invalid secret"}
 
-    # Example: prepare payload (replace with GitHub repo logic later)
     payload = build_evaluation_payload(
         parsed,
         repo_url="https://github.com/your-username/repo",
@@ -26,6 +24,3 @@ async def api_endpoint(request: Request):
     )
 
     return {"status": "ok", "payload": payload}
-
-# Vercel serverless handler
-handler = Mangum(app)
