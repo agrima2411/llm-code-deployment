@@ -32,4 +32,5 @@ uvicorn
 requests
 python-dotenv
 pydantic
+mangum
 
